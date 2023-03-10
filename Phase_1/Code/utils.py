@@ -134,3 +134,5 @@ def reprojection_error(X, p1, p2, R1, C1, R2, C2, K):
     error2 = np.square(v2 - v2_proj) + np.square(u2 - u2_proj)
 
     return error1, error2
+
+

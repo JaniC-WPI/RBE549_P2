@@ -15,7 +15,10 @@ def cheirality_check(C_list, R_list, X_list):
             # check cheirality condition for each triangulated point
             num_valid = 0
             X_valid = []
+            print(X_list.shape)
+
             for k in range(len(X_list)):
+                print(X_list[k].shape)
                 X_hom = np.hstack((X_list[k], 1))
                 x1_hom = np.dot(P1, X_hom)
                 x2_hom = np.dot(P2, X_hom)
