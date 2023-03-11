@@ -31,7 +31,7 @@ def reprojection_loss(X, pts1, pts2, projection_matrix1, projection_matrix2):
 def non_linear_triangulation(K, x1, x2, X_init_3d, R1, C1, R2, C2):
     
     P1 = get_projection_matrix(R1, C1, K) 
-    P2 = get_projection_matrix(R1, C1, K)
+    P2 = get_projection_matrix(R2, C2, K)
     
     assert x1.shape[0] == x2.shape[0] == X_init_3d.shape[0], 'Different shape between 2D to 3d correspondences'
 

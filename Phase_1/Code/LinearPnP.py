@@ -27,15 +27,15 @@ def PnP_reprojection_error(x_3d, pts, K, R, C):
 def LinearPnP(X, x, K):
     N = X.shape[0]
     
-    X = h_transform(X)
-    x = h_transform(x)
+    X_ht = h_transform(X)
+    x_ht = h_transform(x)
     
     # normalize x
     K_inv = np.linalg.inv(K)
-    x_n = K_inv.dot(x.T).T
+    x_n = K_inv.dot(x_ht.T).T
     
     for i in range(N):
-        X = X[i].reshape((1, 4))
+        X_pnp = X_ht[i].reshape((1, 4))
         zeros = np.zeros((1, 4))
         
         u, v, _ = x_n[i]
@@ -43,9 +43,9 @@ def LinearPnP(X, x, K):
         u_cross = np.array([[0, -1, v],
                             [1,  0 , -u],
                             [-v, u, 0]])
-        X_tilde = np.vstack((np.hstack((   X, zeros, zeros)), 
-                            np.hstack((zeros,     X, zeros)), 
-                            np.hstack((zeros, zeros,     X))))
+        X_tilde = np.vstack((np.hstack((X_pnp, zeros, zeros)), 
+                            np.hstack((zeros,     X_pnp, zeros)), 
+                            np.hstack((zeros, zeros,     X_pnp))))
         a = u_cross.dot(X_tilde)
         
         if i > 0:

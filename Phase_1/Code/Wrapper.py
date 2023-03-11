@@ -91,22 +91,22 @@ def main():
     R1_ = np.identity(3)
     C1_ = np.zeros((3,1))
 
-    print(C_set)
+    # print(C_set)
 
     pts_3d_4 = []
     for i in range(len(C_set)):
         x1 = pts1
         x2 = pts2
         # C_set[i] = C_set[i].reshape(3,1)
-        print(C_set[i])
-        print(C_set[i].shape)
+        # print(C_set[i])
+        # print(C_set[i].shape)
         X = triangulate(K, R1_, C1_, R_set[i], C_set[i], x1, x2)
 
         #Now we get 4 poses, we need to select unique one with maximum positive depth points
         X = X/X[:,3].reshape(-1,1)
         pts_3d_4.append(X)
 
-    R_best, C_best, X = cheirality_check(C_set,R_set,pts_3d_4)
+    R_best, C_best, X = disambiguate_pose(R_set, C_set, pts_3d_4)
     X = X/X[:,3].reshape(-1,1)
 
     #Non-Linear Triangulation
@@ -165,7 +165,7 @@ def main():
         X = X_all[feature_idx_i,:].reshape(-1,3)
 
         ##### Here We start PnP
-        R_init, C_init = PnPRANSAC(K,pts_i,X, iter=1000, thresh=5)
+        R_init, C_init = PnPRANSAC(K,pts_i,X, 1000, 5)
         linear_error_pnp = PnP_reprojection_error(X, pts_i, K, R_init, C_init)
         
         Ri, Ci = NonLinearPnP(K, pts_i, X, R_init, C_init)
@@ -189,7 +189,7 @@ def main():
 
             # print(x1.shape,x2.shape)
             # print(np.array(R_set[k]).shape,C_set[k])
-            X_d = triangulate(K,C_set[k],R_set[k],Ci,Ri,x1,x2)
+            X_d = triangulate(K,R_set[k],C_set[k],Ri,Ci,x1,x2)
             # print("burr",X_d,X_d.shape)
             X_d = X_d/X_d[:,3].reshape(-1,1)
             # print("burr",X_d,X_d.shape)
@@ -236,7 +236,7 @@ def main():
                 BundAdj_error = PnP_reprojection_error(X,x,K,R_set_[k],C_set_[k])
                 print("########Error after Bundle Adjustment: ", BundAdj_error)
 
-            print("############Regestired camera: ", i+1,"############################")
+            # print("############Registired camera: ", i+1,"############################")
 
     X_found[X_all[:,2]<0] = 0
     print("#############DONE###################")
