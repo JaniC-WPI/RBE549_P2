@@ -6,9 +6,9 @@ from nerf_helper_utility.utils import *
 from nerf_helper_utility.get_rays import *
 from nerf_helper_utility.Renderer import *
 
-def rgb_values(height, width, focal, pose, near_threshold, far_threshold, Nc, batch_size, N_encode, model, device):
+def rgb_values(height, width, focal, pose, near_threshold, far_threshold, coarse_features, batch_size, N_encode, model, device):
     
-    origin_ray, ray_origins, depth_val, query_points = get_rays(height, width, focal, pose, near_threshold, far_threshold, Nc, device)
+    origin_rays, ray_origins, depth_val, query_points = get_rays(height, width, focal, pose, near_threshold, far_threshold, coarse_features, device)
     
     flat_query_pts = query_points.reshape((-1,3))
     
@@ -24,7 +24,7 @@ def rgb_values(height, width, focal, pose, near_threshold, far_threshold, Nc, ba
     radiance_field_flat = torch.cat(predictions, dim=0)
     unflat_shape = list(query_points.shape[:-1]) + [4]
     radiance = torch.reshape(radiance_field_flat, unflat_shape)
-    logits_rgb, _, _ = render_function(radiance, origin_ray, depth_val)
+    logits_rgb, _, _ = render_function(radiance, origin_rays, depth_val)
 
     return logits_rgb            
   

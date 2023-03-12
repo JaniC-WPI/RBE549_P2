@@ -18,7 +18,7 @@ def generate_mini_batch(encoded_data, batch_size):
 #Create output in video format
 def create_video():
   result_path = 'NeRF_results'
-  clip = ImageSequenceClip(result_path, 5)
+  clip = ImageSequenceClip(result_path, 3)
   clip.write_videofile('Output_NeRF.mp4')
   shutil.rmtree(result_path)
 

@@ -21,7 +21,7 @@ def main():
 
   # Parse command-line arguments
   Parser = argparse.ArgumentParser()
-  Parser.add_argument('--NumOfEpochs', type=int, default=100000)
+  Parser.add_argument('--NumOfEpochs', type=int, default=1000)
   Parser.add_argument('--CB', type=int, default=32)
   Parser.add_argument('--BatchSize', type=int, default=4096)
   Parser.add_argument('--NearThreshold', type=int, default=2)
