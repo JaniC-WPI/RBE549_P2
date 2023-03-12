@@ -10,7 +10,8 @@ Implementing the original NERF method https://arxiv.org/abs/2003.08934
 Download the lego data for NeRF from the original author’s link https://drive.google.com/drive/folders/1lrDkQanWtTznf48FCaW5lX9ToRdNDF1a
 
 
-Overall Inputs and Outputs of the Model are as shown below:
+Below is an Overall Overview of our Neural Radiance Field scene representation and differentible rendering procedure:-
+
 
 
 
