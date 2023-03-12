@@ -35,7 +35,7 @@ def LinearPnP(X, x, K):
     x_n = K_inv.dot(x_ht.T).T
     
     for i in range(N):
-        X_pnp = X_ht[i].reshape((1, 4))
+        X_i = X_ht[i].reshape((1, 4))
         zeros = np.zeros((1, 4))
         
         u, v, _ = x_n[i]
@@ -43,9 +43,9 @@ def LinearPnP(X, x, K):
         u_cross = np.array([[0, -1, v],
                             [1,  0 , -u],
                             [-v, u, 0]])
-        X_tilde = np.vstack((np.hstack((X_pnp, zeros, zeros)), 
-                            np.hstack((zeros,     X_pnp, zeros)), 
-                            np.hstack((zeros, zeros,     X_pnp))))
+        X_tilde = np.vstack((np.hstack((X_i, zeros, zeros)), 
+                            np.hstack((zeros,     X_i, zeros)), 
+                            np.hstack((zeros, zeros,     X_i))))
         a = u_cross.dot(X_tilde)
         
         if i > 0:

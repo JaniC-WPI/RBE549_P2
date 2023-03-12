@@ -3,7 +3,7 @@ import numpy as np
 from EstimateFundamentalMatrix import *
 
 
-def error_F(pts1,pts2,F):
+def F_error(pts1,pts2,F):
     
     "Checking the epipolar constraint"
     x1 = np.array([pts1[0], pts1[1],1])
@@ -13,7 +13,7 @@ def error_F(pts1,pts2,F):
 
     return np.abs(error)
 
-def getInliers(pts1,pts2,idx):
+def get_F_inliers(pts1,pts2,idx):
 
     "Point Correspondence are computed using SIFT feature descriptors, data becomes noisy, RANSAC is used with fundamental matrix with maximum no of Inliers"
     
@@ -34,7 +34,7 @@ def getInliers(pts1,pts2,idx):
 
         if F is not None:
             for j in range(n_rows):
-                error = error_F(pts1[j,:],pts2[j,:],F)  #x2.TFx1 = 0
+                error = F_error(pts1[j,:],pts2[j,:],F)  #x2.TFx1 = 0
                 if error < error_threshold:
                     indices.append(idx[j])
 

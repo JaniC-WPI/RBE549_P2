@@ -27,9 +27,12 @@ def main():
     Data = Args.Data
     Output = Args.Outputs
 
+    num_of_images = image_count(Data)
+    print(num_of_images)
+
     #Images
     images = []
-    for i in range(1,6): #6 images given
+    for i in range(1,num_of_images+1): #5 images given
         path = Data + str(i) + ".png"
         image = cv2.imread(path)
         if image is not None:
@@ -48,8 +51,8 @@ def main():
     filtered_feature_flag = np.zeros_like(feature_flag) #np.zeros has limit which is solve by zeros_like
     f_matrix = np.empty(shape=(5,5), dtype=object)
 
-    for i in range(0,4): #No of Images = 5
-        for j in range(i+1,5):
+    for i in range(0,num_of_images-1): #No of Images = 5
+        for j in range(i+1,num_of_images):
 
             idx = np.where(feature_flag[:,i] & feature_flag[:,j])
             pts1 = np.hstack((feature_x[idx,i].reshape((-1,1)), feature_y[idx,i].reshape((-1,1))))
@@ -59,7 +62,7 @@ def main():
             if len(idx) > 8:
                 # print(idx)
                 # F_inliers, inliers_idx = ransac_fundamental_matrix(pts1,pts2,num_iterations=2000, threshold=0.002)
-                F_inliers, inliers_idx = getInliers(pts1,pts2,idx)
+                F_inliers, inliers_idx = get_F_inliers(pts1,pts2,idx)
                 print("Between Images: ",i,"and",j,"NO of Inliers: ", len(inliers_idx), "/", len(idx) )
                 f_matrix[i,j] = F_inliers
                 # print(f_matrix)
@@ -131,16 +134,22 @@ def main():
     mean_err2 = np.mean(total_err2)
 
     print("Between images",0+1,1+1,"Before optimization Linear Triang: ", mean_err1, "After optimization Non-Linear Triang: ", mean_err2)
-
+    
+    # print(feature_x.shape)
+    # print(feature_x.shape[0])
     "Resistering Cam 1 and 2"
     X_all = np.zeros((feature_x.shape[0],3))
+    # print("new X all", X_all)
     cam_indices = np.zeros((feature_x.shape[0],1), dtype = int)
     X_found = np.zeros((feature_x.shape[0],1), dtype = int)
-
+    # print("X_found_1", X_found)
+    # print(idx)
     X_all[idx] = X[:,:3]
     X_found[idx] = 1
+    # print("X_found_2", X_found)
     cam_indices[idx] = 1
     X_found[np.where(X_all[:2]<0)] = 0
+    # print("X_found_3", X_found)
 
     C_set = []
     R_set = []
@@ -151,6 +160,31 @@ def main():
     R_set.append(R0)
     C_set.append(C_best)
     R_set.append(R_best)
+
+    # feature_idx = np.where(X_found[:,0])
+    # X = X_all[feature_idx]
+    x = X[:,0]
+    y = X[:,1]
+    z = X[:,2]
+
+    # feature_idx = np.where(X_found[:,0])
+    # X = X_all[feature_idx]
+    x_ = X_refined[:,0]
+    y_ = X_refined[:,1]
+    z_ = X_refined[:,2]
+
+    fig = plt.figure(figsize = (30,30))
+    plt.xlim(-10,10)
+    plt.ylim(-5,15)
+    plt.scatter(x,z,marker='.',linewidths=0.5, color = 'blue', label = 'linear')
+    plt.scatter(x_,z_,marker='.',linewidths=0.5, color = 'red', label = 'nonlinear') # added this line to plot x_ and z_ data
+    for i in range(0, len(C_set)):
+        R1 = get_euler(R_set[i])
+        R1 = np.rad2deg(R1)
+        plt.plot(C_set[i][0],C_set[i][2], marker=(3,0, int(R1[1])), markersize=15, linestyle='None')
+    plt.legend(loc = 'upper left')
+    plt.savefig(Output+'lin_non_lin.png')
+    plt.show()
 
     print("#########Registered Cam 1 and Cam 2 ############")
 
@@ -226,19 +260,20 @@ def main():
             
             ##Bundle Adjustment
             print("########Bundle Adjustment Started")
-            R_set_, C_set_, X_all = bundle_adjustment(X_index, visibility_matrix,X_all,X_found,feature_x,feature_y,filtered_feature_flag,R_set,C_set,K,nCam=i)
+            R_set_, C_set_, X_all_ = bundle_adjustment(X_index, visibility_matrix,X_all,X_found,feature_x,feature_y,filtered_feature_flag,R_set,C_set,K,nCam=i)
             # print(np.array(R_set).shape,np.array(C_set).shape,X_all.shape)
             
             for k in range(0,i+1):
                 idx_X_pts = np.where(X_found[:,0] & filtered_feature_flag[:,k])
                 x = np.hstack((feature_x[idx_X_pts,k].reshape(-1,1), feature_y[idx_X_pts,k].reshape(-1,1)))
-                X = X_all[idx_X_pts]
+                X = X_all_[idx_X_pts]
                 BundAdj_error = PnP_reprojection_error(X,x,K,R_set_[k],C_set_[k])
                 print("########Error after Bundle Adjustment: ", BundAdj_error)
 
             # print("############Registired camera: ", i+1,"############################")
-
+    X_found_ = X_found
     X_found[X_all[:,2]<0] = 0
+    X_found_[X_all_[:,2]<0] = 0
     print("#############DONE###################")
 
     feature_idx = np.where(X_found[:,0])
@@ -247,28 +282,47 @@ def main():
     y = X[:,1]
     z = X[:,2]
 
+    feature_idx = np.where(X_found_[:,0])
+    X_ = X_all_[feature_idx]
+    x_ = X_[:,0]
+    y_ = X_[:,1]
+    z_ = X_[:,2]
+
     #####2D Plotting
-    fig = plt.figure(figsize = (10,10))
-    plt.xlim(-4,6)
-    plt.ylim(-2,12)
-    plt.scatter(x,z,marker='.',linewidths=0.5, color = 'blue')
+    fig = plt.figure(figsize = (30,30))
+    plt.xlim(-10,10)
+    plt.ylim(-5,15)
+    plt.scatter(x,z,marker='.',linewidths=0.5, color = 'blue', label = 'Before Sparse Bundle Adj')
+    plt.scatter(x_,z_,marker='.',linewidths=1.5, color = 'red', label = 'After Sparse Bundle Adj') # added this line to plot x_ and z_ data
     for i in range(0, len(C_set_)):
         R1 = get_euler(R_set_[i])
         R1 = np.rad2deg(R1)
         plt.plot(C_set_[i][0],C_set_[i][2], marker=(3,0, int(R1[1])), markersize=15, linestyle='None')
-
+    plt.legend(loc = 'upper left')
     plt.savefig(Output+'2D.png')
     plt.show()
+
+    # plt.xlim(-15,15)
+    # plt.ylim(-5,25)
+    # plt.scatter(x,z,marker='.',linewidths=0.5, color = 'blue')
+    # for i in range(0, len(C_set_)):
+    #     R1 = get_euler(R_set_[i])
+    #     R1 = np.rad2deg(R1)
+    #     plt.plot(C_set_[i][0],C_set_[i][2], marker=(3,0, int(R1[1])), markersize=15, linestyle='None')
+    #     plt.plot(C_set[i][0], C_set[i][2], marker='o', markersize=5, color='red')
+
+    # plt.savefig(Output+'2D.png')
+    # plt.show()
 
 
     ######3D Plotting
     fig1= plt.figure(figsize= (5,5))
     ax = plt.axes(projection="3d")
-    ax.scatter3D(x,y,z,color="green")
-    plt.show()
+    ax.scatter3D(x_,y_,z_,color="green")
+
     plt.savefig(Output+'3D.png')
-
-
+    plt.show()
+    
 
 if __name__ == '__main__':
     main()

@@ -105,6 +105,8 @@ def extract_features(data_path):
         np.array(feature_y).reshape(-1, num_of_imgs), np.array(feature_flag).reshape(-1, num_of_imgs), \
             np.array(feature_rgb).reshape(-1, 3)
 
+def draw_features():
+    pass
 
 def reprojection_error(X, p1, p2, R1, C1, R2, C2, K):
     P1 = get_projection_matrix(R1, C1, K)
