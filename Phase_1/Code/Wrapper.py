@@ -72,14 +72,42 @@ def main():
     
     
     print("######Obtained Feature Points after RANSAC#######")
-    print("Starting with 1st 2 images")
+    print("Starting with 1st 2 images")    
+   
 
-    
-    #Compute Essential Matrix, Estimate Pose, Triangulate
+    # assume images 1 and 2 are stored in the 'images' list
+    img1 = images[0]
+    img2 = images[1]
+
+    # get inliers for images 1 and 2
+    inliers_idx_1 = np.where(filtered_feature_flag[:,0] == 1)[0]
+    inliers_idx_2 = np.where(filtered_feature_flag[:,1] == 1)[0]
+
+    # get feature points for images 1 and 2
+    features_1 = np.hstack((feature_x[:,0].reshape((-1,1)), feature_y[:,0].reshape((-1,1))))
+    features_2 = np.hstack((feature_x[:,1].reshape((-1,1)), feature_y[:,1].reshape((-1,1))))
+
+    # get inlier feature points for images 1 and 2
+    inlier_features_1 = features_1[inliers_idx_1, :]
+    inlier_features_2 = features_2[inliers_idx_2, :]
+
+    # concatenate images horizontally
+    stacked_img = np.concatenate((img1, img2), axis=1)
+
+    # draw lines between inlier feature points
+    for i in range(len(inliers_idx_1)):
+        pt1 = tuple(inlier_features_1[i])
+        pt2 = tuple(inlier_features_2[i]) + np.array([img1.shape[1], 0])
+        cv2.line(stacked_img, (int(pt1[0]), int(pt1[1])), (int(pt2[0]), int(pt2[1])), (0, 255, 0), thickness=1)
+
+
+    cv2.imwrite(Output+'inlier_matching.png', stacked_img)
+
+    # #Compute Essential Matrix, Estimate Pose, Triangulate
     F12 = f_matrix[0,1]
 
     
-    #K is given
+    # #K is given
     K = camera_matrix(Data)
     # K = np.array([[531.122155322710, 0 ,407.192550839899],[0, 531.541737503901, 313.308715048366],[0,0,1]])
     E12 = getEssentialMatrix(K,F12)
@@ -176,8 +204,8 @@ def main():
     fig = plt.figure(figsize = (30,30))
     plt.xlim(-10,10)
     plt.ylim(-5,15)
-    plt.scatter(x,z,marker='.',linewidths=0.5, color = 'blue', label = 'linear')
-    plt.scatter(x_,z_,marker='.',linewidths=0.5, color = 'red', label = 'nonlinear') # added this line to plot x_ and z_ data
+    plt.scatter(x,z,marker='.',linewidths=1.5, color = 'blue', label = 'linear')
+    plt.scatter(x_,z_,marker='.',linewidths=1.5, color = 'red', label = 'nonlinear') # added this line to plot x_ and z_ data
     for i in range(0, len(C_set)):
         R1 = get_euler(R_set[i])
         R1 = np.rad2deg(R1)
@@ -292,7 +320,7 @@ def main():
     fig = plt.figure(figsize = (30,30))
     plt.xlim(-10,10)
     plt.ylim(-5,15)
-    plt.scatter(x,z,marker='.',linewidths=0.5, color = 'blue', label = 'Before Sparse Bundle Adj')
+    plt.scatter(x,z,marker='.',linewidths=1.5, color = 'blue', label = 'Before Sparse Bundle Adj')
     plt.scatter(x_,z_,marker='.',linewidths=1.5, color = 'red', label = 'After Sparse Bundle Adj') # added this line to plot x_ and z_ data
     for i in range(0, len(C_set_)):
         R1 = get_euler(R_set_[i])
