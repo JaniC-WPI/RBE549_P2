@@ -17,7 +17,11 @@ Pre-requisites :
 
 ## Synthetic Results
 
-![Synthetic Results]()
+![Synthetic Results](https://github.com/JaniC-WPI/RBE549_P2/blob/master/Phase_2/NeRF_Output/Output_NeRF.gif)
+
+## Photometric Loss
+
+![Loss](https://github.com/JaniC-WPI/RBE549_P2/blob/master/Phase_2/NeRF_Output/Loss.png)
 
 ## Steps to run the code:
 
