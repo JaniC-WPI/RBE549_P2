@@ -28,17 +28,28 @@ Pre-requisites :
 
 ## Training
 1. Go to the directory named Phase 2
-     cd Phase_2
+
+```sh
+ cd Phase_2
+```
+     
 2. Start training the NeRF model on GPU/CPU depending on the availability of the device
-    python3 Train_NeRF.py
+
+```sh
+  python3 Train_NeRF.py
+```
+  
 
 After implementing above two steps for training, checkpoint named model.ckpt will be created, then you can execute the below code for Testing the NeRF model to produce synthetic results.
 
 ## Testing
 1. Keep the same directory as you kept for Training. 
 2. Testing the NeRF model
-
+ 
+```sh
     python3 Test_NeRF.py
+```
+  
 
 As a result, an output video will be created and saved named as "Output_NeRF.mp4" and a loss graph will be saved in NeRF_Output folder.
 
