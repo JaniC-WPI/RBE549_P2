@@ -1,11 +1,11 @@
-## RBE/CS549: P2 - Buildings built in minutes - SfM and NeRF
+# RBE/CS549: P2 - Buildings built in minutes - SfM and NeRF
 
-##
+#
 
 
 Implementing the original NERF method https://arxiv.org/abs/2003.08934
 
-# Inputs:
+## Inputs:
 
 Download the lego data for NeRF from the original author’s link https://drive.google.com/drive/folders/1lrDkQanWtTznf48FCaW5lX9ToRdNDF1a
 
@@ -15,15 +15,15 @@ Overall Inputs and Outputs of the Model are as below:
 
 
 
-# Implementing Guidelines:
+## Implementing Guidelines:
 
-# For Training 
+### For Training 
 
 Code - python3 Train_NeRF.py
 
 After training a checkpoint named model.ckpt will be saved. After that you can implement the below code for the Testing.
 
-# For Testing
+### For Testing
 
 Code - python3 Test_NeRF.py
 
