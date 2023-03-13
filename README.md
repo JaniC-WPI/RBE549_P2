@@ -1,7 +1,13 @@
 # RBE/CS549: P2 - Buildings built in minutes - SfM and NeRF
 
-#
+Implementing the SfM Pipeline
 
+# cd <folder where codes are added>
+-- open Terminal
+-- run the following
+> python3 Wrapper.py - <path\to\data\folder> - <path\to\save\output>
+
+-- Outputs are saved in the folder Phase_1\Data\IntermediateOutputImages\
 
 Implementing the original NERF method https://arxiv.org/abs/2003.08934
 

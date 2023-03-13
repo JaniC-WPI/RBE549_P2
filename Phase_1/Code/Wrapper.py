@@ -106,7 +106,7 @@ def main():
     # #Compute Essential Matrix, Estimate Pose, Triangulate
     F12 = f_matrix[0,1]
 
-    
+    print(F12)
     # #K is given
     K = camera_matrix(Data)
     # K = np.array([[531.122155322710, 0 ,407.192550839899],[0, 531.541737503901, 313.308715048366],[0,0,1]])
